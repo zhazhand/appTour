@@ -27,12 +27,13 @@
                     </td>
                     <td>
                         <button class="btn btn-success" ng-if="item.login!='admin'" ng-disabled="!item.edit">Сохранить</button>
-                        <button class="btn btn-danger pull-right" ng-if="item.login!='admin'" ng-disabled="!item.edit">Удалить</button>
+                        <button class="btn btn-danger pull-right" ng-if="item.login!='admin'" ng-disabled="!item.edit" ng-click="delete(item)">Удалить</button>
                     </td>
                 </tr>
             </tbody>
         </table>
         <div class="pull-right">
+            <button class="btn btn-success" ng-click="addNewManager()">Добавить менеджера</button>
             <button class="btn btn-primary" ng-click="backToStartPage()">Выйти</button>
         </div>
     </div>

@@ -22,7 +22,7 @@
         "name": "Настя Ахмедова",
         "login": "nastya",
         "passward": "nastya",
-        "admission": true
+        "admission": false
     }],
     []
 ]

@@ -9,9 +9,9 @@ app.controller('mainCtrl', function($scope, $http) {
     });
     
 
-    $scope.currentMember; //текущий менеджер
-    $scope.page = {
-        current: 1 //текущая страница представления
+    $scope.current = {
+        page: 1, //текущая страница представления
+        member: '' //текущий менеджер
     };
     $scope.login = {
         state: true,
@@ -31,7 +31,7 @@ app.controller('loginCtrl', function($scope) {
                 name = new RegExp('^' + name + '$', 'i');
                 if ($scope.items[i].login.search(name) != -1) { //проверка введенного логина (без учета регистра) на наличие в базе
                     $scope.login.state = true;
-                    $scope.$parent.currentMember = $scope.items[i];
+                    $scope.current.member = $scope.items[i];
                     break;
                 } else {
                     $scope.login.state = false;
@@ -40,29 +40,27 @@ app.controller('loginCtrl', function($scope) {
         }
     };
 
-    $scope.toOpenData = function(param) {
-        var log = $scope.login.name.toLowerCase();
-        if (log == 'admin') {
-            $scope.page.current = 2;
+    $scope.toOpenData = function() {
+        var tmp = $scope.current.member;
+        if (tmp.login == 'admin') {
+            $scope.current.page = 2;
         } else {
-            $scope.page.current = 3;
-        }
+            if (tmp.admission) {
+                $scope.current.page = 4;
+            } else {
+               $scope.current.page = 3;
+             }
+            $scope.login.name = '';
+            $scope.login.pass = '';
+          }
     };
-    
-    $scope.addManager = function(par) {
-        var newItem = {};
-        newItem.name = 'Новенький';
-        newItem.login = par.name;
-        newItem.passward = par.pass;
-        newItem.admission = false;
-        $scope.items.push(newItem);
-    }
+
 });
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 app.controller('adminCtrl', function($scope) {
     $scope.backToStartPage = function() {
-        $scope.page.current = 1;
+        $scope.current.page = 1;
         $scope.login.name = '';
         $scope.login.pass = '';
     };
@@ -72,15 +70,32 @@ app.controller('adminCtrl', function($scope) {
             parametr1[i].edit = false;
         }
         parametr2.edit = true;
+    };
+    
+    $scope.addNewManager = function() {
+        var flag = 0;
+        $scope.newManager= {
+            name: 'Новый',
+            login: 'new',
+            passward: 'new',
+            admission: false
+        };
+        for (var i=0; i<$scope.items.length; i++) {
+            if ($scope.items[i].login == $scope.newManager.login) {
+                flag++;
+            }
+        }
+        if (!flag) {
+            $scope.items.push($scope.newManager);
+        } else {
+            alert('Такой менеджер уже существует!');
+        }
+    };
+    
+        $scope.delete = function (par) {
+        $scope.items.splice($scope.items.indexOf(par), 1);
     }
     
 });
 
-
-
-
-
-
-function guestMessage() {
-    
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

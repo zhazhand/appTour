@@ -1,0 +1,28 @@
+[
+    [{
+        "id": 1000,
+        "name": "Администратор",
+        "login": "admin",
+        "passward": "adm",
+        "admission": true
+    }, {
+        "id": 1,
+        "name": "Тест",
+        "login": "test",
+        "passward": "test",
+        "admission": true
+    }, {
+        "id": 2,
+        "name": "Яна Зиборова",
+        "login": "yana",
+        "passward": "yana",
+        "admission": true
+    }, {
+        "id": 3,
+        "name": "Настя Ахмедова",
+        "login": "nastya",
+        "passward": "nastya",
+        "admission": true
+    }],
+    []
+]

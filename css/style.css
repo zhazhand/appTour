@@ -4,6 +4,14 @@
   background-color: transparent;
   padding: 5px;
 }
+.admin-panel td > input:focus {
+  border: 2px solid #61b7ed;
+  background-color: #b4fcff;
+}
+.admin-panel td > input:focus:hover {
+  border: 2px solid #61b7ed;
+  background-color: #b4fcff;
+}
 .admin-panel td:hover > input {
   border: inherit;
   background-color: #fff;
@@ -15,4 +23,20 @@
 }
 p {
   font-size: 19px;
+}
+.client {
+  color: darkgreen;
+  font-weight: 500;
+  font-size: 21px;
+  background-color: chartreuse;
+  text-transform: capitalize;
+}
+.clientTb {
+  font-weight: 500;
+  font-size: 21px;
+  text-transform: capitalize;
+}
+.startData {
+  margin-top: 20px;
+  margin-bottom: 50px;
 }

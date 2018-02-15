@@ -3,6 +3,14 @@
         border-color: transparent;
         background-color: transparent;
         padding: 5px;
+        &:focus {
+            border: 2px solid #61b7ed;
+            background-color: #b4fcff;
+            &:hover {
+                border: 2px solid #61b7ed;
+                background-color: #b4fcff;
+            }
+        }
     }
     &:hover {
         >input {
@@ -11,7 +19,6 @@
         }
     }
 }
-
 .ban {
     p {
         font-weight: 700;
@@ -19,7 +26,25 @@
         color: #b42020;
     }
 }
-
 p {
     font-size: 19px;
+}
+
+.client {
+    color: darkgreen;
+    font-weight: 500;
+    font-size: 21px;
+    background-color:chartreuse;
+    text-transform: capitalize;
+}
+
+.clientTb {
+    font-weight: 500;
+    font-size: 21px;
+    text-transform: capitalize;
+}
+
+.startData {
+    margin-top: 20px;
+    margin-bottom: 50px;
 }

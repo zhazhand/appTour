@@ -6,27 +6,29 @@ app.controller('mainCtrl', function($scope, $http, $rootScope) {
         $scope.result = response;
         $scope.items = $scope.result[0]; //массив менеджеров
         $scope.trsts = $scope.result[1]; //массив туристов
+        $scope.countries = $scope.result[2]; //массив стран
     });
+
+    $scope.current = {
+        page: 1, //текущая страница представления
+        member: '' //текущий менеджер
+    };
+
+    $scope.login = {
+        state: true,
+        name: '',
+        entry: false
+    };
 
     $scope.send = function() {
         // $broadcast - отправка события всем scope от rootScope
         $rootScope.$broadcast("messageCurrent", {
             message: $scope.current
         });
+        $rootScope.$broadcast("messageCountries", {
+            message: $scope.countries
+        });
     }
-
-
-
-
-    $scope.current = {
-        page: 1, //текущая страница представления
-        member: '' //текущий менеджер
-    };
-    $scope.login = {
-        state: true,
-        name: '',
-        entry: false
-    };
 });
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,6 +115,45 @@ app.controller("managerCtrl", function($scope) {
     // обработка события messageCurrent на текущем scope
     $scope.$on("messageCurrent", function(event, args) {
         $scope.current = args.message;
-    })
+    });
 
+    $scope.$on("messageCountries", function(event, args) {
+        $scope.countries = args.message;
+    });
+
+    $scope.client = {};
+
+    $scope.invis = false;
+    $scope.toSelect = function() {
+        if ($scope.selected == $scope.countries[$scope.countries.length - 1]) {
+            $scope.invis = true;
+        } else {
+            $scope.invis = false;
+            $scope.client.country = $scope.selected.name;
+        }
+        /*после выбора страны передаем в созданный объект (client) свойство manager - менеджер прикрепленный к клиенту*/
+        $scope.client.manager = $scope.current.member.name;
+        var manName = $scope.client.manager;
+        manName = manName.split(' ');
+        $scope.current.member.firstName = manName[0];
+    }
+
+    $scope.comf = 0;
+    $scope.newClient = 0;
+    $scope.newStep = function() {
+        if (($scope.comf == 0 && $scope.newClient < 2) || $scope.comf == 1) {
+            $scope.newClient = $scope.newClient + 1;
+            console.log($scope.newClient, $scope.comf);
+        }
+    };
+    $scope.oldStep = function() {
+        if (($scope.comf == 0 && $scope.newClient < 3) || $scope.comf == 1) {
+            $scope.newClient = $scope.newClient - 1;
+        }
+    };
+
+    $scope.comfort = function(par) {
+        $scope.comf = par;
+        console.log($scope.newClient, $scope.comf);
+    }
 });

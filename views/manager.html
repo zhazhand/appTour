@@ -1,6 +1,20 @@
 <div class="panel panel-primary" ng-controller="managerCtrl">
     <div class="panel-heading">
-        <h2 class="text-center">Менеджер {{current.member.name}}</h2>
+        <h2 class="text-center" ng-hide="newClient>1">Менеджер {{current.member.name}}</h2>
+        <table class="table" ng-show="newClient>1">
+            <caption><span class="clientTb">Исходные данные туриста:</span>
+            </caption>
+            <tr>
+                <td>Имя: <span class="clientTb">{{client.firstName}}</span>
+                </td>
+                <td>Фамилия: <span class="clientTb">{{client.lastName}}</span>
+                </td>
+                <td>Пол: <span class="clientTb">{{client.gender}}</span>
+                </td>
+                <td>Страна: <span class="clientTb">{{client.country}}</span>
+                </td>
+            </tr>
+        </table>
     </div>
     <div class="panel-body">
         <div class="container-fluid" ng-hide="newClient">
@@ -56,25 +70,11 @@
                     <label class="control-label col-lg-1">Страна:</label>
                     <div class="col-lg-2">
                         <select ng-model="selected" ng-options="item.name for item in countries" ng-hide="invis" ng-change="toSelect()"></select>
-                        <input type="text" ng-model="client.country" ng-show="invis" placeholder="Название страны" ng-pattern="/^[а-яА-Я]+$/" name="clCountry">
+                        <input type="text" ng-model="client.country" ng-show="invis" placeholder="Название страны" ng-pattern="/^[а-яА-Я]+$/" name="clCountry" ng-change="toInp()">
                         <span ng-show="clForm.clCountry.$error.pattern" style="color:crimson">Возможна только КИРИЛЛИЦА!</span>
                     </div>
                 </form>
-                <table class="table table-bordered" ng-show="newClient>1">
-                    <caption><span class="clientTb">Исходные данные туриста:</span>
-                    </caption>
-                    <tr>
-                        <td>Имя: <span class="clientTb">{{client.firstName}}</span>
-                        </td>
-                        <td>Фамилия: <span class="clientTb">{{client.lastName}}</span>
-                        </td>
-                        <td>Пол: <span class="clientTb">{{client.gender}}</span>
-                        </td>
-                        <td>Страна: <span class="clientTb">{{client.country}}</span>
-                        </td>
-                    </tr>
 
-                </table>
             </div>
             <!--////////////////////////////////////////////////////////////////////////////////////////////////////////-->
             <div ng-show="newClient==2">
@@ -146,7 +146,7 @@
                         Отлично, <span class="client">{{client.firstName}}</span>!
                     </p>
                     <p>Вы интересовались подбором тура в <span class="client">{{client.country}}</span>. Расскажите, пожалуйста, что Вы ожидаете от отдыха?</p>
-                    <div class="row">
+                    <div class="row startData">
                         <div class="col-xs-10 col-xs-offset-1">
                             <textarea cols="140" rows="4" placeholder="Даем клиенту высказаться (КАК МОЖНО ПОЛНЕЕ!), внимательно слушаем и вносим сюда его пожелания" ng-model="client.wishes">
                             </textarea>
@@ -154,12 +154,337 @@
                     </div>
 
                 </div>
+                <div ng-show="comf==1">
+                    <p>
+                        Скажите, Вы уже отдыхали в <span class="client">{{client.country}}</span>?
+                    </p>
+                    <p class="text-center">
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.countryErVis" name="clientCountyEarlyVisit" value="Да">Да
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.countryErVis" name="clientCountyEarlyVisit" value="Нет">Нет
+                        </label>
+                    </p>
+                    <div ng-if="client.countryErVis=='Да'">
+                        <p>В каких отелях были?</p>
+                        <div class="row startData">
+                            <div class="col-xs-10 col-xs-offset-1">
+                                <textarea cols="140" rows="3" placeholder="Отели, ранее посещенные туристом" ng-model="client.earlyHotels">
+                                </textarea>
+                            </div>
+                        </div>
+                        <p>Что понравилось?</p>
+                        <div class="row startData">
+                            <div class="col-xs-10 col-xs-offset-1">
+                                <textarea cols="140" rows="3" placeholder="Что понравилось в ранее посещенных отелях" ng-model="client.earlyHotelsPlus">
+                                </textarea>
+                            </div>
+                        </div>
+                        <p>Что не понравилось?</p>
+                        <div class="row startData">
+                            <div class="col-xs-10 col-xs-offset-1">
+                                <textarea cols="140" rows="3" placeholder="Что НЕ понравилось в ранее посещенных отелях" ng-model="client.earlyHotelsMinus">
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="client.countryErVis=='Нет'">
+                        <p>
+                            А в каких странах были (отдыхали)?
+                        </p>
+                        <div class="row">
+                            <div class="col-xs-2 col-xs-offset-1">
+                                <select size="7" multiple ng-change="toSelectCountries()" name="countries[]" ng-model="$parent.selectCountries" ng-options="item.name for item in countries">
+                                </select>
+                            </div>
+                            <div class="col-xs-5">
+                                <p class="text-info">
+                                    Чтобы выбрать (или удалить из выбранных),- кликайте по странам с зажатой клавишей
+                                    <button type="button" class="btn btn-default">Ctrl</button>.
+                                    <br>Результат выбора можете посмотреть в блоке справа &rarr;
+                                </p>
+                            </div>
+                            <div class="col-xs-2">
+                                <ol>
+                                    <li ng-repeat="x in client.earlyCountries">{{x}}</li>
+                                </ol>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div ng-if="client.earlyCountries.length">
+                            <p>В каких отелях останавливались? Что понравилось? Что не понравилось?</p>
+                            <div class="row startData">
+                                <div class="col-xs-10 col-xs-offset-1">
+                                    <textarea cols="140" rows="3" placeholder="Запомнившиеся особенности отдыха в другой стране" ng-model="client.otherRestFeatures">
+                                    </textarea>{{client.otherRestFeatures}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div ng-if="client.countryErVis">
+                    <p><span class="client">{{client.firstName}}</span>, назовите, пожалуйста, ориентировочные даты предполагаемой поездки:</p>
+                    <p>от
+                        <input type="text" ng-model="client.tripStart" placeholder="Начало поездки">
+                        <br>до
+                        <input type="text" ng-model="client.tripEnd" placeholder="Окончание поездки">
+                    </p>
+                    <p>На какое количество ночей?
+                        <input type="text" ng-model="client.tripDuration" placeholder="Количество ночей">
+                    </p>
+                    <p>Сколько человек?
+                        <input type="text" ng-model="client.quantity" placeholder="Количество людей">
+                    </p>
+                    <p ng-if="client.quantity">Дети в поездке:
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.hasChildren" name="clientChildren" value="Есть">Есть
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.hasChildren" name="clientChildren" value="Нет">Нет
+                        </label>
+                    </p>
+                    <p ng-if="client.hasChildren=='Есть'">
+                        Сколько детей:
+                        <input type="text" ng-model="client.childrenQuantity" placeholder="Количество детей">
+                        <br>Их возраст:
+                        <input type="text" ng-model="client.childrenOlder" placeholder="Возраст детей">
+                    </p>
+                    <p ng-if="client.hasChildren=='Есть'">Проездные документы (паспорта) у детей (всех):
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.childrenHasPassport" name="clientChildrenPassport" value="Есть">Есть
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.childrenHasPassport" name="clientChildrenPassport" value="Нет">Нет
+                        </label>
+                    </p>
+                    <p ng-if="client.hasChildren=='Есть'">Разрешение на выезд у детей (нужно, если родители в разводе):
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.childrenHasPermission" name="clientChildrenPermission" value="Есть">Есть
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.childrenHasPermission" name="clientChildrenPermission" value="Нет">Нет
+                        </label>
+                    </p>
+                </div>
+                <div ng-if="client.hasChildren">
+                    <p>
+                        Так, <span class="client">{{client.firstName}}</span>, давайте теперь определимся с деталями поездки.
+                        <br>Ваш предпочитаемый город вылета:
+                    </p>
+                    <p>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.cityFly" name="clientCityFly" value="Любой">Любой
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.cityFly" name="clientCityFly" value="Выбрать">Выбрать
+                        </label>
+                    </p>
+                    <div class="row" ng-if="client.cityFly=='Выбрать'">
+                        <div class="col-xs-2 col-xs-offset-1">
+                            <select size="7" multiple ng-change="toSelectAirport()" name="ports[]" ng-model="client.selectAirport" ng-options="port for port in airports">
+                            </select>
+                        </div>
+                        <div class="col-xs-5">
+                            <p class="text-info">
+                                Чтобы выбрать (или удалить из выбранных),- кликайте по городам вылета с зажатой клавишей
+                                <button type="button" class="btn btn-default">Ctrl</button>.
+                                <br>Результат выбора можете посмотреть в блоке справа &rarr;
+                            </p>
+                        </div>
+                        <div class="col-xs-2">
+                            <ol>
+                                <li ng-repeat="x in client.airports">{{x}}</li>
+                            </ol>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <p ng-if="client.airports.length||(client.cityFly=='Любой')">Есть предпочтения по регионам?
+                        <br>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.regionFavorite" name="clientregionFavorite" value="Нет">Нет
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.regionFavorite" name="clientregionFavorite" value="Есть">Есть
+                        </label>
+                    </p>
+                    <div class="row" ng-if="client.regionFavorite=='Есть'">
+                        <div class="col-xs-2 col-xs-offset-1">
+                            <select size="7" multiple ng-change="toSelectRegion()" name="regions[]" ng-model="client.selectRegion" ng-options="item for item in client.region">
+                            </select>
+                        </div>
+                        <div class="col-xs-5">
+                            <p class="text-info">
+                                Чтобы выбрать (или удалить из выбранных),- кликайте по регионам с зажатой клавишей
+                                <button type="button" class="btn btn-default">Ctrl</button>.
+                                <br>Результат выбора можете посмотреть в блоке справа &rarr;
+                            </p>
+                        </div>
+                        <div class="col-xs-2">
+                            <ol>
+                                <li ng-repeat="x in client.countryRegions">{{x}}</li>
+                            </ol>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div ng-if="client.regionFavorite">
+                        <p><span ng-if="client.regionFavorite=='Есть'">Теперь</span><span ng-if="client.regionFavorite=='Нет'">Тогда</span> поговорим об отеле.</p>
+                        <p>Уровень отеля:
+                        </p>
+                        <div class="row">
+                            <div class="col-xs-1 col-xs-offset-1">
+                                <label>2*
+                                    <input type="checkbox" ng-model="hotelStar.value1" ng-true-value="'2*-1'" ng-false-value="'2*-0'" ng-change="toStar(hotelStar.value1, client.hotelStars)">
+                                </label>
+                            </div>
+                            <div class="col-xs-1">
+                                <label>3*
+                                    <input type="checkbox" ng-model="hotelStar.value2" ng-true-value="'3*-1'" ng-false-value="'3*-0'" ng-change="toStar(hotelStar.value2, client.hotelStars)">
+                                </label>
+                            </div>
+                            <div class="col-xs-1">
+                                <label>4*
+                                    <input type="checkbox" ng-model="hotelStar.value3" ng-true-value="'4*-1'" ng-false-value="'4*-0'" ng-change="toStar(hotelStar.value3, client.hotelStars)">
+                                </label>
+                            </div>
+                            <div class="col-xs-1">
+                                <label>5*
+                                    <input type="checkbox" ng-model="hotelStar.value4" ng-true-value="'5*-1'" ng-false-value="'5*-0'" ng-change="toStar(hotelStar.value4, client.hotelStars)">
+                                </label>
+                            </div>
+                            <div class="col-xs-2">
+                                <label>Многоэтажный корпус
+                                    <input type="checkbox" ng-model="hotelStar.value5" ng-true-value="'Многоэтажка-1'" ng-false-value="'Многоэтажка-0'" ng-change="toStar(hotelStar.value5, client.hotelStars)">
+                                </label>
+                            </div>
+                            <div class="col-xs-2">
+                                <label>HV (High village)
+                                    <input type="checkbox" ng-model="hotelStar.value6" ng-true-value="'HV-1'" ng-false-value="'HV-0'" ng-change="toStar(hotelStar.value6, client.hotelStars)">
+                                </label>
+                            </div>
+                            <div class="col-xs-2">
+                                <label>Бунгало
+                                    <input type="checkbox" ng-model="hotelStar.value7" ng-true-value="'Бунгало-1'" ng-false-value="'Бунгало-0'" ng-change="toStar(hotelStar.value7, client.hotelStars)">
+                                </label>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div>
+                            <p>Какая линия:</p>
+                            <div class="row">
+                                <div class="col-xs-2 col-xs-offset-2">
+                                    <label class="radio-inline">
+                                        <input type="radio" ng-model="client.hotelLine" name="clienthotelLine" value="Без разницы">Без разницы
+                                    </label>
+                                </div>
+                                <div class="col-xs-2">
+                                    <label class="radio-inline">
+                                        <input type="radio" ng-model="client.hotelLine" name="clienthotelLine" value="Первая линия">Первая линия
+                                    </label>
+                                </div>
+                                <div class="col-xs-2">
+                                    <label class="radio-inline">
+                                        <input type="radio" ng-model="client.hotelLine" name="clienthotelLine" value="Вторая линия">Вторая линия
+                                    </label>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                        <div ng-if="client.hotelLine">
+                            <p>Тип отеля:</p>
+                            <p>
+                                <label>Тихий
+                                    <input type="checkbox" ng-model="hotelType.value1" ng-true-value="'Тихий-1'" ng-false-value="'Тихий-0'" ng-change="toStar(hotelType.value1, client.hotelTypes)">
+                                </label>
+                            </p>
+                            <p>
+                                <label>Семейный
+                                    <input type="checkbox" ng-model="hotelType.value2" ng-true-value="'Семейный-1'" ng-false-value="'Семейный-0'" ng-change="toStar(hotelType.value2, client.hotelTypes)">
+                                </label>
+                            </p>
+                            <p ng-show="hotelType.value2=='Семейный-1'">
+                                <label>Нужен детский клуб
+                                    <input type="checkbox" ng-model="hotelType.value3" ng-true-value="'С детским клубом-1'" ng-false-value="'С детским клубом-0'" ng-change="toStar(hotelType.value3, client.hotelTypes)">
+                                </label>
+                            </p>
+                            <p>
+                                <label>Активный
+                                    <input type="checkbox" ng-model="hotelType.value4" ng-true-value="'Активный-1'" ng-false-value="'Активный-0'" ng-change="toStar(hotelType.value4, client.hotelTypes)">
+                                </label>
+                            </p>
+                            <p>
+                                <label>Молодежный
+                                    <input type="checkbox" ng-model="hotelType.value5" ng-true-value="'Молодежный-1'" ng-false-value="'Молодежный-0'" ng-change="toStar(hotelType.value5, client.hotelTypes)">
+                                </label>
+                            </p>
+                            <p ng-hide="hotelType.value1=='Тихий-1'">
+                                <label>Важна анимация
+                                    <input type="checkbox" ng-model="hotelType.value6" ng-true-value="'Важна анимация-1'" ng-false-value="'Важна анимация-0'" ng-change="toStar(hotelType.value6, client.hotelTypes)">
+                                </label>
+                            </p>
+                            <p ng-hide="hotelType.value1=='Тихий-1'">
+                                <label>Важно наличие дискотеки
+                                    <input type="checkbox" ng-model="hotelType.value7" ng-true-value="'Важна дискотека-1'" ng-false-value="'Важна дискотека-0'" ng-change="toStar(hotelType.value7, client.hotelTypes)">
+                                </label>
+                            </p>
+                            <p>
+                                <label>Важно наличие водных горок
+                                    <input type="checkbox" ng-model="hotelType.value8" ng-true-value="'Важны горки-1'" ng-false-value="'Важны горки-0'" ng-change="toStar(hotelType.value8, client.hotelTypes)">
+                                </label>
+                            </p>
+                        </div>
+                    </div>
+                    <div ng-if="client.hotelLine">
+                        <p><span class="client">{{client.firstName}}</span>, давайте резюмируем значимость отеля.
+                        </p>
+                        <p>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="client.hotelRate" name="clienthotelRate" value="первостепенен">Отель первостепенен. Отдых планируется, в основном, на территории отеля. Очень важна территория отеля, его инфраструктура, качество обслуживания, анимация и т. д.
+                            </label>
+                        </p>
+                        <p>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="client.hotelRate" name="clienthotelRate" value="второстепенен">Отель второстепенен. Отдых планируется проводить на море, в экскурсиях, поездках. Сам отель нужен только для того, чтобы переночевать в нем.
+                            </label>
+                        </p>
+                    </div>
+                    <div ng-if="client.hotelRate">
+                        <p>
+                           Отлично, <span class="client">{{client.firstName}}</span>, последний вопрос. Предполагаемая поездка для Вас это 
+                        </p>
+                        <p>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="запланированный отдых" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation1)">запланированный отдых.
+                            </label>
+                        </p>
+                        <p>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="желание сменить обстановку" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation1)">желание сменить обстановку.
+                            </label>
+                        </p>
+                        <p>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="желание покоя, тишины" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation1)">желание покоя, тишины.
+                            </label>
+                        </p>
+                        <p>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="что-то другое" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation1)">что-то другое.
+                            </label>
+                        </p>
+                        <p ng-if="client.restMotivation1=='что-то другое'">
+                            <textarea cols="60" rows="2" ng-model="client.restMotivation2" placeholder="Мотивация к отдыху" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation2, client.restMotivation1)"></textarea>
+                        </p>
+                    </div>
+                    <div>{{client.restMotiv}}</div>
+                </div>
             </div>
 
             <!--////////////////////////////////////////////////////////////////////////////////////////////////////////-->
             <div class="row">
                 <div class="col-xs-2 col-xs-offset-8">
-                    <button class="btn-block btn-primary btn" ng-click="newStep()" ng-disabled="!(client.country&&client.gender&&client.lastName&&client.firstName)" ng-hide="comf==4">Далее</button>
+                    <button class="btn-block btn-primary btn" ng-click="newStep()" ng-disabled="!(client.country&&client.gender&&client.lastName&&client.firstName)" ng-show="(!comf&&newClient==1)">Далее</button>
                 </div>
                 <div class="col-xs-2">
                     <button class="btn-block btn-warning btn" ng-click="oldStep()" ng-hide="newClient>1">Назад</button>

@@ -123,14 +123,31 @@ app.controller("managerCtrl", function($scope) {
 
     $scope.client = {};
 
+    function toSetRegion() {
+        var country = $scope.client.country;
+        for (var i = 0; i < $scope.countries.length; i++) {
+            var arrayCountry = $scope.countries[i].name;
+            if (country.toLowerCase() == arrayCountry.toLowerCase()) {
+                $scope.client.region = $scope.countries[i].region;
+                break;
+            }
+        }
+    }
+
+    $scope.toInp = function() {
+        toSetRegion();
+    };
+
     $scope.invis = false;
     $scope.toSelect = function() {
+        $scope.client.country = '';
         if ($scope.selected == $scope.countries[$scope.countries.length - 1]) {
             $scope.invis = true;
         } else {
             $scope.invis = false;
             $scope.client.country = $scope.selected.name;
         }
+        toSetRegion();
         /*после выбора страны передаем в созданный объект (client) свойство manager - менеджер прикрепленный к клиенту*/
         $scope.client.manager = $scope.current.member.name;
         var manName = $scope.client.manager;
@@ -141,19 +158,70 @@ app.controller("managerCtrl", function($scope) {
     $scope.comf = 0;
     $scope.newClient = 0;
     $scope.newStep = function() {
-        if (($scope.comf == 0 && $scope.newClient < 2) || $scope.comf == 1) {
-            $scope.newClient = $scope.newClient + 1;
-            console.log($scope.newClient, $scope.comf);
-        }
+        $scope.newClient = $scope.newClient + 1;
     };
     $scope.oldStep = function() {
-        if (($scope.comf == 0 && $scope.newClient < 3) || $scope.comf == 1) {
-            $scope.newClient = $scope.newClient - 1;
-        }
+        $scope.newClient = $scope.newClient - 1;
     };
 
     $scope.comfort = function(par) {
         $scope.comf = par;
-        console.log($scope.newClient, $scope.comf);
+    };
+
+    $scope.selectCountries = "";
+    $scope.client.earlyCountries = [];
+    $scope.toSelectCountries = function() {
+        $scope.client.earlyCountries.length = 0;
+        for (var i = 0; i < $scope.selectCountries.length; i++) {
+            $scope.client.earlyCountries.push($scope.selectCountries[i].name);
+        }
+        return $scope.client.earlyCountries;
+    };
+
+    $scope.airports = ["Киев", "Днепр", "Запорожье", "Кривой Рог", "Харьков", "Одесса", "Львов"];
+    $scope.client.airports = [];
+    $scope.toSelectAirport = function() {
+        $scope.client.airports.length = 0;
+        for (var i = 0; i < $scope.client.selectAirport.length; i++) {
+            $scope.client.airports.push($scope.client.selectAirport[i]);
+        }
+        return $scope.client.airports;
+    };
+
+
+    $scope.client.countryRegions = [];
+    $scope.toSelectRegion = function() {
+        $scope.client.countryRegions.length = 0;
+        for (var i = 0; i < $scope.client.selectRegion.length; i++) {
+            $scope.client.countryRegions.push($scope.client.selectRegion[i]);
+        }
+        return $scope.client.countryRegions;
+    };
+
+    $scope.client.hotelStars = [];
+    $scope.client.hotelTypes = [];
+    $scope.toStar = function(par, result) {
+        var str = par;
+        str = str.split('-');
+        if (+str[1]) {
+            result.push(str[0]);
+        } else {
+            result.splice(result.indexOf(str[0]), 1);
+        }
+        return result;
+    };
+
+    $scope.client.restMotiv = "u";
+    $scope.client.selectDefaulte = function(main, par, def) {
+//        var main;
+        if (par) {
+            main = par;
+        } else {
+            if (def) {
+                main = def;
+            }
+        }
+        /*$scope.client.restMotivation = main;*/
     }
+
 });

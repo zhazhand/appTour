@@ -23,6 +23,12 @@
         "login": "nastya",
         "passward": "nastya",
         "admission": false
+    }, {
+        "id": 4,
+        "name": "Оксана Жажко",
+        "login": "sova",
+        "passward": "sova",
+        "admission": true
     }],
     [],
     [{

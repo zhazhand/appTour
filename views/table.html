@@ -1,0 +1,136 @@
+<div class="panel panel-primary" ng-controller="tableCtrl">
+    <div class="panel-heading">
+        <h2 class="text-center">Менеджер {{current.member.name}}</h2>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-hover">
+            <caption><span class="clientTb">заявка</span> <span class="clientTb">{{tourist.lastName}}</span> <span class="clientTb">{{tourist.firstName}}</span>
+            </caption>
+            <tbody>
+                <tr>
+                    <td>Фамилия:</td>
+                    <td><span class="clientTb">{{tourist.lastName}}</span></td>
+                </tr>
+                <tr>
+                    <td>Имя:</td>
+                    <td><span class="clientTb">{{tourist.firstName}}</span></td>
+                </tr>
+                <tr>
+                    <td>Пол:</td>
+                    <td>{{tourist.gender}}</td>
+                </tr>
+                <tr>
+                    <td>Страна:</td>
+                    <td><span class="clientTb">{{tourist.country}}</span></td>
+                </tr>
+                <tr>
+                    <td>Посещал ранее <span class="clientTb">{{tourist.country}}</span>:</td>
+                    <td>{{tourist.countryErVis}}</td>
+                </tr>
+                <tr ng-if="tourist.countryErVis=='Да'">
+                    <td>В каких отелях был:</td>
+                    <td>{{tourist.earlyHotels}}</td>
+                </tr>
+                <tr ng-if="tourist.countryErVis=='Да'">
+                    <td>Что понравилось (в стране/ в отелях):</td>
+                    <td>{{tourist.earlyHotelsPlus}}</td>
+                </tr>
+                <tr ng-if="tourist.countryErVis=='Да'">
+                    <td>Что НЕ понравилось (в стране/ в отелях):</td>
+                    <td>{{tourist.earlyHotelsMinus}}</td>
+                </tr>
+                <tr ng-if="tourist.countryErVis=='Нет'">
+                    <td>Какие страны посещал ранее:</td>
+                    <td>{{tourist.countryVisitedEarly}}</td>
+                </tr>
+                <tr ng-if="tourist.earlyCountries.length">
+                    <td>Запомнившиеся особенности отдыха в другой стране:</td>
+                    <td>{{tourist.otherRestFeatures}}</td>
+                </tr>
+                <tr>
+                    <td>Поездка планируется с:</td>
+                    <td>{{tourist.tripStart | date : "dd MMMM yyyy"}}</td>
+                </tr>
+                <tr>
+                    <td>Поездка планируется до:</td>
+                    <td>{{tourist.tripEnd | date : "dd MMMM yyyy"}}</td>
+                </tr>
+                <tr>
+                    <td>Количество ночей:</td>
+                    <td>{{tourist.tripDuration}}</td>
+                </tr>
+                <tr>
+                    <td>Количество человек:</td>
+                    <td>{{tourist.quantity}}</td>
+                </tr>
+                <tr>
+                    <td>Дети в поездке:</td>
+                    <td>{{tourist.hasChildren}}</td>
+                </tr>
+                <tr ng-if="tourist.hasChildren=='Есть'">
+                    <td>Количество детей:</td>
+                    <td>{{tourist.childrenQuantity}}</td>
+                </tr>
+                <tr ng-if="tourist.hasChildren=='Есть'">
+                    <td>Возраст детей:</td>
+                    <td><span ng-repeat="child in tourist.childrenList">{{child}}, </span></td>
+                </tr>
+                <tr ng-if="tourist.hasChildren=='Есть'">
+                    <td>Проездные документы у детей:</td>
+                    <td>{{tourist.childrenHasPassport || "неизвестно"}}</td>
+                </tr>
+                <tr ng-if="tourist.hasChildren=='Есть'">
+                    <td>Разрешение на выезд у детей:</td>
+                    <td>{{tourist.childrenHasPermission || "неизвестно"}}</td>
+                </tr>
+                <tr>
+                    <td>Город вылета:</td>
+                    <td>{{tourist.favoriteAirports}}</td>
+                </tr>
+                <tr>
+                    <td>Предпочтительный регион:</td>
+                    <td>{{tourist.favoriteRegion}}</td>
+                </tr>
+                <tr>
+                    <td>Уровень отеля:</td>
+                    <td><span ng-repeat="tag in tourist.hotelStars">{{tag}}, </span></td>
+                </tr>
+                <tr>
+                    <td>На какой линии отель:</td>
+                    <td>{{tourist.hotelLine}}</td>
+                </tr>
+                <tr>
+                    <td>Тип отеля:</td>
+                    <td><span ng-repeat="type in tourist.hotelTypes">{{type}}, </span></td>
+                </tr>
+                <tr>
+                    <td>Значимость отеля:</td>
+                    <td>{{tourist.hotelRate}}</td>
+                </tr>
+                <tr>
+                    <td>Пожелания клиента:</td>
+                    <td>{{tourist.wishes}}</td>
+                </tr>
+                <tr>
+                    <td>Начало разговора:</td>
+                    <td>{{tourist.startTalk | date : "dd MMMM yyyy HH mm"}}</td>
+                </tr>
+                <tr>
+                    <td>Конец разговора:</td>
+                    <td>{{tourist.endTalk | date : "dd MMMM yyyy HH mm"}}</td>
+                </tr>
+                <tr>
+                    <td>Время, затраченное на разговор:</td>
+                    <td>{{tourist.talkDuration}}</td>
+                </tr>
+                <tr>
+                    <td>Время, затраченное клиентом на высказывание своих ожиданий:</td>
+                    <td>{{tourist.requirements}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-xs-3 col-xs-offset-9"><button class="btn btn-block btn-warning" ng-click="current.page = 4">ВЕРНУТЬСЯ</button></div>
+        </div>
+    </div>
+</div>

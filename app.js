@@ -20,7 +20,8 @@ app.controller('mainCtrl', function($scope, $http, $rootScope) {
         entry: false
     };
 
-    $scope.send = function() {
+
+    /*$scope.send = function() {
         // $broadcast - отправка события всем scope от rootScope
         $rootScope.$broadcast("messageCurrent", {
             message: $scope.current
@@ -28,10 +29,12 @@ app.controller('mainCtrl', function($scope, $http, $rootScope) {
         $rootScope.$broadcast("messageCountries", {
             message: $scope.countries
         });
-    }
+
+    }*/
 });
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 app.controller('loginCtrl', function($scope) {
     $scope.pass = true;
 
@@ -68,7 +71,8 @@ app.controller('loginCtrl', function($scope) {
 
 });
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 app.controller('adminCtrl', function($scope) {
     $scope.backToStartPage = function() {
         $scope.current.page = 1;
@@ -109,8 +113,9 @@ app.controller('adminCtrl', function($scope) {
 
 });
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-app.controller("managerCtrl", function($scope) {
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+app.controller("managerCtrl", function($scope, $rootScope) {
 
     // обработка события messageCurrent на текущем scope
     $scope.$on("messageCurrent", function(event, args) {
@@ -134,7 +139,7 @@ app.controller("managerCtrl", function($scope) {
         }
     }
 
-    $scope.toInp = function() {
+    $scope.toInp = function() { //выбор региона при вводе страны через input
         toSetRegion();
     };
 
@@ -166,16 +171,88 @@ app.controller("managerCtrl", function($scope) {
 
     $scope.comfort = function(par) {
         $scope.comf = par;
+        if ($scope.comf == 1) {
+            $scope.client.startTalk = new Date();
+            var clTime = $scope.client.startTalk.getHours() - 1;
+            if (clTime < 10) {
+                $scope.client.time = 10;
+            } else {
+                $scope.client.time = clTime;
+            }
+        }
+    };
+    $scope.client.endTalkRequirements = function(par) {
+        $scope.client.dateShow = par;
+        var tmp = new Date();
+        var seconds = (tmp - $scope.client.startTalk) / 1000;
+        var minutes = parseInt(seconds / 60);
+        seconds = parseInt(seconds % 60);
+        $scope.client.requirements = minutes + ' минут ' + seconds + ' секунд'; //время, которое клиент затратил на высказывание своих первичных ожиданий
     };
 
-    $scope.selectCountries = "";
+    $scope.client.changeCountryVisited = function() {
+        $scope.client.countryVisitedEarly = 'Никакие (в первый раз)'; //дефолтное значение для посещенных стран
+        $scope.client.dateShow = true;
+    };
+
     $scope.client.earlyCountries = [];
     $scope.toSelectCountries = function() {
         $scope.client.earlyCountries.length = 0;
-        for (var i = 0; i < $scope.selectCountries.length; i++) {
-            $scope.client.earlyCountries.push($scope.selectCountries[i].name);
+        for (var i = 0; i < $scope.client.selectCountries.length; i++) {
+            $scope.client.earlyCountries.push($scope.client.selectCountries[i].name);
         }
+        $scope.client.countryVisitedEarly = toSelect($scope.client.earlyCountries.join(', '), 'Никакие (в первый раз)');
         return $scope.client.earlyCountries;
+    };
+
+    $scope.client.changeAirport = function() {
+        $scope.client.favoriteAirports = 'Любой'; //дефолтное значение для города вылета
+    };
+
+    $scope.client.changeRegion = function() {
+        $scope.client.favoriteRegion = 'Любой'; //дефолтное значение для региона отдыха
+    };
+
+    $scope.client.peopleAmount = (function() {
+        var amount = [];
+        for (var i = 0; i < 15; i++) {
+            amount[i] = i + 1;
+        }
+        amount.push('>15');
+        return amount;
+    }());
+
+    $scope.client.childrenAmount = $scope.client.peopleAmount.filter(function(number) {
+        return parseInt(number) < 16;
+    });
+
+    $scope.client.setChildrenQuantity = function(par) {
+        var childrenArr = [];
+        for (var i = 0; i < par; i++) {
+            childrenArr[i] = i + 1;
+        }
+        return $scope.client.setChildrenArray = childrenArr; //длина массива - выбранное количество детей
+    };
+
+    $scope.client.childrenList = [];
+    $scope.client.childrenListFlag = false;
+
+    $scope.client.countChildren = function(ind, val, len) {
+        $scope.client.childrenListFlag = false;
+        var sum = 0;
+
+        $scope.client.childrenList.length = len;
+        $scope.client.childrenList[ind] = +ind + 1 + '-й ребёнок - возраст ' + val+'лет';
+        for (var i = 0; i < len; i++) {
+            if ($scope.client.childrenList[i]) {
+                sum += 1;
+            }
+        }
+        if (sum == len) {
+            $scope.client.childrenListFlag = true;
+        } else {
+            $scope.client.childrenListFlag = false;
+        }
     };
 
     $scope.airports = ["Киев", "Днепр", "Запорожье", "Кривой Рог", "Харьков", "Одесса", "Львов"];
@@ -185,6 +262,7 @@ app.controller("managerCtrl", function($scope) {
         for (var i = 0; i < $scope.client.selectAirport.length; i++) {
             $scope.client.airports.push($scope.client.selectAirport[i]);
         }
+        $scope.client.favoriteAirports = toSelect($scope.client.airports.join(', '), 'Любой');
         return $scope.client.airports;
     };
 
@@ -195,6 +273,7 @@ app.controller("managerCtrl", function($scope) {
         for (var i = 0; i < $scope.client.selectRegion.length; i++) {
             $scope.client.countryRegions.push($scope.client.selectRegion[i]);
         }
+        $scope.client.favoriteRegion = toSelect($scope.client.countryRegions.join(', '), 'Любой');
         return $scope.client.countryRegions;
     };
 
@@ -211,17 +290,39 @@ app.controller("managerCtrl", function($scope) {
         return result;
     };
 
-    $scope.client.restMotiv = "u";
-    $scope.client.selectDefaulte = function(main, par, def) {
-//        var main;
-        if (par) {
-            main = par;
-        } else {
-            if (def) {
-                main = def;
-            }
-        }
-        /*$scope.client.restMotivation = main;*/
+    $scope.goTable = function() {
+        $scope.current.page = 5;
+        $scope.client.endTalk = new Date();
+        var seconds = ($scope.client.endTalk - $scope.client.startTalk) / 1000;
+        var minutes = parseInt(seconds / 60);
+        seconds = parseInt(seconds % 60);
+        $scope.client.talkDuration = minutes + ' минут ' + seconds + ' секунд'; //время разговора (всего)
+        $rootScope.$broadcast("messageClient", {
+            message: $scope.client
+        });
+    };
+
+    $scope.client.selectMotiv = function(par, def) {
+        $scope.client.restMotiv = toSelect(par, def);
     }
 
+    function toSelect(par, def) { //функция выбора (def - дефолтное значение (может не быть))
+        if (par) {
+            return par;
+        } else {
+            if (def) {
+                return def;
+            }
+        }
+    }
+
+});
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+app.controller("tableCtrl", function($scope) {
+    // обработка события messageClient на текущем scope
+    $scope.$on("messageClient", function(event, args) {
+        $scope.tourist = args.message;
+    });
 });

@@ -2,7 +2,7 @@
     <div class="panel-heading">
         <h2 class="text-center" ng-hide="newClient>1">Менеджер {{current.member.name}}</h2>
         <table class="table" ng-show="newClient>1">
-            <caption><span class="clientTb">Исходные данные туриста:</span>
+            <caption class="manager"><span class="clientTb">Исходные данные туриста:</span>
             </caption>
             <tr>
                 <td>Имя: <span class="clientTb">{{client.firstName}}</span>
@@ -16,7 +16,7 @@
             </tr>
         </table>
     </div>
-    <div class="panel-body">
+    <div class="panel-body bodyHeight">
         <div class="container-fluid" ng-hide="newClient">
             <div class="row">
                 <div class="col-xs-6">
@@ -53,15 +53,15 @@
                     <div class="col-lg-4">
                         <div class="row">
                             <div class="col-lg-2 text">
-                                <span class="text-right">Пол:</span>
+                                <span class="text-right fw-bold">Пол:</span>
                             </div>
                             <div class="col-lg-5">
-                                <label class="radio-inline">
+                                <label class="radio-inline fw-bold">
                                     <input type="radio" ng-model="client.gender" name="clientGender" value="мужчина">мужчина
                                 </label>
                             </div>
                             <div class="col-lg-5">
-                                <label class="radio-inline">
+                                <label class="radio-inline fw-bold">
                                     <input type="radio" ng-model="client.gender" name="clientGender" value="женщина">женщина
                                 </label>
                             </div>
@@ -160,12 +160,13 @@
                     </p>
                     <p class="text-center">
                         <label class="radio-inline">
-                            <input type="radio" ng-model="client.countryErVis" name="clientCountyEarlyVisit" value="Да">Да
+                            <input type="radio" ng-model="client.countryErVis" name="clientCountyEarlyVisit" value="Да" ng-change="client.endTalkRequirements(true)">Да
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" ng-model="client.countryErVis" name="clientCountyEarlyVisit" value="Нет">Нет
+                            <input type="radio" ng-model="client.countryErVis" name="clientCountyEarlyVisit" value="Нет" ng-change="client.endTalkRequirements(false)">Нет
                         </label>
                     </p>
+                    <hr ng-if="client.countryErVis">
                     <div ng-if="client.countryErVis=='Да'">
                         <p>В каких отелях были?</p>
                         <div class="row startData">
@@ -174,6 +175,7 @@
                                 </textarea>
                             </div>
                         </div>
+                        <hr>
                         <p>Что понравилось?</p>
                         <div class="row startData">
                             <div class="col-xs-10 col-xs-offset-1">
@@ -181,6 +183,7 @@
                                 </textarea>
                             </div>
                         </div>
+                        <hr>
                         <p>Что не понравилось?</p>
                         <div class="row startData">
                             <div class="col-xs-10 col-xs-offset-1">
@@ -188,14 +191,24 @@
                                 </textarea>
                             </div>
                         </div>
+                        <hr>
                     </div>
                     <div ng-if="client.countryErVis=='Нет'">
                         <p>
                             А в каких странах были (отдыхали)?
                         </p>
-                        <div class="row">
+                        <p>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="client.countryVisited" name="clientCountyVisitedEarly" ng-change="client.changeCountryVisited()" ng-value=false>Ни в каких
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="client.countryVisited" name="clientCountyVisitedEarly" ng-value=true>Выбрать
+                            </label>
+                        </p>
+                        <hr ng-if="client.countryVisited">
+                        <div class="row" ng-if="client.countryVisited">
                             <div class="col-xs-2 col-xs-offset-1">
-                                <select size="7" multiple ng-change="toSelectCountries()" name="countries[]" ng-model="$parent.selectCountries" ng-options="item.name for item in countries">
+                                <select size="7" multiple ng-change="toSelectCountries()" name="countries[]" ng-model="client.selectCountries" ng-options="item.name for item in countries">
                                 </select>
                             </div>
                             <div class="col-xs-5">
@@ -212,31 +225,38 @@
                             </div>
                             <div class="clearfix"></div>
                         </div>
+                        <hr ng-if="client.earlyCountries.length">
                         <div ng-if="client.earlyCountries.length">
                             <p>В каких отелях останавливались? Что понравилось? Что не понравилось?</p>
                             <div class="row startData">
                                 <div class="col-xs-10 col-xs-offset-1">
                                     <textarea cols="140" rows="3" placeholder="Запомнившиеся особенности отдыха в другой стране" ng-model="client.otherRestFeatures">
-                                    </textarea>{{client.otherRestFeatures}}
+                                    </textarea>
                                 </div>
                             </div>
                         </div>
+                        <hr ng-if="client.earlyCountries.length">
                     </div>
-
+                    <hr ng-if="client.countryErVis=='Нет'">
                 </div>
-                <div ng-if="client.countryErVis">
+                <div ng-if="client.dateShow||client.countryVisited">
                     <p><span class="client">{{client.firstName}}</span>, назовите, пожалуйста, ориентировочные даты предполагаемой поездки:</p>
-                    <p>от
-                        <input type="text" ng-model="client.tripStart" placeholder="Начало поездки">
-                        <br>до
-                        <input type="text" ng-model="client.tripEnd" placeholder="Окончание поездки">
+                    <p>дата начала :
+                        <input type="date" ng-model="client.tripStart" placeholder="Начало поездки">
                     </p>
-                    <p>На какое количество ночей?
-                        <input type="text" ng-model="client.tripDuration" placeholder="Количество ночей">
+                    <hr ng-if="client.tripStart">
+                    <p ng-if="client.tripStart">дата окончания :
+                        <input type="date" ng-model="client.tripEnd" placeholder="Окончание поездки">
                     </p>
-                    <p>Сколько человек?
-                        <input type="text" ng-model="client.quantity" placeholder="Количество людей">
+                    <hr ng-if="client.tripEnd">
+                    <p ng-if="client.tripEnd">На какое количество ночей?
+                        <select size="3" ng-model="client.tripDuration" ng-options="item for item in client.peopleAmount"></select>
                     </p>
+                    <hr ng-if="client.tripDuration">
+                    <p ng-if="client.tripDuration">Сколько человек?
+                        <select size="3" ng-model="client.quantity" ng-options="item for item in client.peopleAmount"></select>
+                    </p>
+                    <hr ng-if="client.quantity">
                     <p ng-if="client.quantity">Дети в поездке:
                         <label class="radio-inline">
                             <input type="radio" ng-model="client.hasChildren" name="clientChildren" value="Есть">Есть
@@ -245,13 +265,21 @@
                             <input type="radio" ng-model="client.hasChildren" name="clientChildren" value="Нет">Нет
                         </label>
                     </p>
+                    <hr ng-if="client.hasChildren">
                     <p ng-if="client.hasChildren=='Есть'">
                         Сколько детей:
-                        <input type="text" ng-model="client.childrenQuantity" placeholder="Количество детей">
-                        <br>Их возраст:
-                        <input type="text" ng-model="client.childrenOlder" placeholder="Возраст детей">
+                        <select size="3" ng-model="client.childrenQuantity" ng-options="item for item in client.childrenAmount" ng-change="client.setChildrenQuantity(client.childrenQuantity)"></select>
                     </p>
-                    <p ng-if="client.hasChildren=='Есть'">Проездные документы (паспорта) у детей (всех):
+                    <hr ng-if="client.hasChildren=='Есть'">
+                    <div ng-if="client.childrenQuantity&&client.hasChildren=='Есть'" class="row">
+                        <div class="col-md-4" ng-repeat="child in client.setChildrenArray">
+                            <p>Ребенок <span class="number">{{$index + 1}}</span>, возраст:
+                                <select size="3" ng-model="client.childrenOlder[$index]" ng-options="item for item in client.peopleAmount" ng-change="client.countChildren($index,client.childrenOlder[$index],  client.childrenQuantity)"></select>
+                            </p>
+                        </div>
+                    </div>
+                    <hr ng-if="client.childrenListFlag">
+                    <p ng-if="client.childrenListFlag">Проездные документы (паспорта) у детей (всех):
                         <label class="radio-inline">
                             <input type="radio" ng-model="client.childrenHasPassport" name="clientChildrenPassport" value="Есть">Есть
                         </label>
@@ -259,31 +287,39 @@
                             <input type="radio" ng-model="client.childrenHasPassport" name="clientChildrenPassport" value="Нет">Нет
                         </label>
                     </p>
-                    <p ng-if="client.hasChildren=='Есть'">Разрешение на выезд у детей (нужно, если родители в разводе):
+                    <hr ng-if="client.childrenHasPassport">
+                    <p ng-if="client.childrenHasPassport">Разрешение на выезд у детей (нужно, если родители в разводе):
                         <label class="radio-inline">
                             <input type="radio" ng-model="client.childrenHasPermission" name="clientChildrenPermission" value="Есть">Есть
                         </label>
                         <label class="radio-inline">
                             <input type="radio" ng-model="client.childrenHasPermission" name="clientChildrenPermission" value="Нет">Нет
                         </label>
+                        <label class="radio-inline">
+                            <input type="radio" ng-model="client.childrenHasPermission" name="clientChildrenPermission" value="Не нужно">Не нужно
+                        </label>
                     </p>
+                    <hr ng-if="client.childrenHasPermission">
                 </div>
-                <div ng-if="client.hasChildren">
+                <div ng-if="client.hasChildren=='Нет'||client.childrenHasPermission">
                     <p>
                         Так, <span class="client">{{client.firstName}}</span>, давайте теперь определимся с деталями поездки.
-                        <br>Ваш предпочитаемый город вылета:
+                    </p>
+                    <p>
+                        Ваш предпочитаемый город вылета:
                     </p>
                     <p>
                         <label class="radio-inline">
-                            <input type="radio" ng-model="client.cityFly" name="clientCityFly" value="Любой">Любой
+                            <input type="radio" ng-model="client.cityFly" name="clientCityFly" value="Любой" ng-change="client.changeAirport()">Любой
                         </label>
                         <label class="radio-inline">
                             <input type="radio" ng-model="client.cityFly" name="clientCityFly" value="Выбрать">Выбрать
                         </label>
                     </p>
+                    <hr ng-if="client.cityFly">
                     <div class="row" ng-if="client.cityFly=='Выбрать'">
                         <div class="col-xs-2 col-xs-offset-1">
-                            <select size="7" multiple ng-change="toSelectAirport()" name="ports[]" ng-model="client.selectAirport" ng-options="port for port in airports">
+                            <select size="7" multiple ng-change="toSelectAirport('Любой')" name="ports[]" ng-model="client.selectAirport" ng-options="port for port in airports">
                             </select>
                         </div>
                         <div class="col-xs-5">
@@ -300,15 +336,17 @@
                         </div>
                         <div class="clearfix"></div>
                     </div>
+                    <hr ng-if="client.selectAirport">
                     <p ng-if="client.airports.length||(client.cityFly=='Любой')">Есть предпочтения по регионам?
                         <br>
                         <label class="radio-inline">
-                            <input type="radio" ng-model="client.regionFavorite" name="clientregionFavorite" value="Нет">Нет
+                            <input type="radio" ng-model="client.regionFavorite" name="clientregionFavorite" value="Нет" ng-change="client.changeRegion()">Нет
                         </label>
                         <label class="radio-inline">
                             <input type="radio" ng-model="client.regionFavorite" name="clientregionFavorite" value="Есть">Есть
                         </label>
                     </p>
+                    <hr ng-if="client.regionFavorite">
                     <div class="row" ng-if="client.regionFavorite=='Есть'">
                         <div class="col-xs-2 col-xs-offset-1">
                             <select size="7" multiple ng-change="toSelectRegion()" name="regions[]" ng-model="client.selectRegion" ng-options="item for item in client.region">
@@ -328,6 +366,7 @@
                         </div>
                         <div class="clearfix"></div>
                     </div>
+                    <hr ng-if="client.selectRegion">
                     <div ng-if="client.regionFavorite">
                         <p><span ng-if="client.regionFavorite=='Есть'">Теперь</span><span ng-if="client.regionFavorite=='Нет'">Тогда</span> поговорим об отеле.</p>
                         <p>Уровень отеля:
@@ -370,27 +409,35 @@
                             </div>
                             <div class="clearfix"></div>
                         </div>
+                        <hr>
                         <div>
                             <p>Какая линия:</p>
                             <div class="row">
                                 <div class="col-xs-2 col-xs-offset-2">
-                                    <label class="radio-inline">
-                                        <input type="radio" ng-model="client.hotelLine" name="clienthotelLine" value="Без разницы">Без разницы
-                                    </label>
+                                    <p>
+                                        <label class="radio-inline">
+                                            <input type="radio" ng-model="client.hotelLine" name="clienthotelLine" value="Без разницы">Без разницы
+                                        </label>
+                                    </p>
                                 </div>
                                 <div class="col-xs-2">
-                                    <label class="radio-inline">
-                                        <input type="radio" ng-model="client.hotelLine" name="clienthotelLine" value="Первая линия">Первая линия
-                                    </label>
+                                    <p>
+                                        <label class="radio-inline">
+                                            <input type="radio" ng-model="client.hotelLine" name="clienthotelLine" value="Первая линия">Первая линия
+                                        </label>
+                                    </p>
                                 </div>
                                 <div class="col-xs-2">
-                                    <label class="radio-inline">
-                                        <input type="radio" ng-model="client.hotelLine" name="clienthotelLine" value="Вторая линия">Вторая линия
-                                    </label>
+                                    <p>
+                                        <label class="radio-inline">
+                                            <input type="radio" ng-model="client.hotelLine" name="clienthotelLine" value="Вторая линия">Вторая линия
+                                        </label>
+                                    </p>
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
                         </div>
+                        <hr ng-if="client.hotelLine">
                         <div ng-if="client.hotelLine">
                             <p>Тип отеля:</p>
                             <p>
@@ -434,7 +481,9 @@
                                 </label>
                             </p>
                         </div>
+
                     </div>
+                    <hr ng-if="client.hotelLine">
                     <div ng-if="client.hotelLine">
                         <p><span class="client">{{client.firstName}}</span>, давайте резюмируем значимость отеля.
                         </p>
@@ -449,35 +498,52 @@
                             </label>
                         </p>
                     </div>
+                    <hr ng-if="client.hotelRate">
                     <div ng-if="client.hotelRate">
                         <p>
-                           Отлично, <span class="client">{{client.firstName}}</span>, последний вопрос. Предполагаемая поездка для Вас это 
+                            Отлично, <span class="client">{{client.firstName}}</span>, последний вопрос. Предполагаемая поездка для Вас это
                         </p>
                         <p>
                             <label class="radio-inline">
-                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="запланированный отдых" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation1)">запланированный отдых.
+                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="запланированный отдых" ng-change="client.selectMotiv(client.restMotivation1)">запланированный отдых.
                             </label>
                         </p>
                         <p>
                             <label class="radio-inline">
-                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="желание сменить обстановку" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation1)">желание сменить обстановку.
+                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="желание сменить обстановку" ng-change="client.Motiv(client.restMotivation1)">желание сменить обстановку.
                             </label>
                         </p>
                         <p>
                             <label class="radio-inline">
-                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="желание покоя, тишины" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation1)">желание покоя, тишины.
+                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="желание покоя, тишины" ng-change="client.selectMotiv(client.restMotivation1)">желание покоя, тишины.
                             </label>
                         </p>
                         <p>
                             <label class="radio-inline">
-                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="что-то другое" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation1)">что-то другое.
+                                <input type="radio" ng-model="client.restMotivation1" name="clientRestMotiv" value="что-то другое" ng-change="client.selectMotiv(client.restMotivation1)">что-то другое.
                             </label>
                         </p>
                         <p ng-if="client.restMotivation1=='что-то другое'">
-                            <textarea cols="60" rows="2" ng-model="client.restMotivation2" placeholder="Мотивация к отдыху" ng-change="client.selectDefaulte(client.restMotiv, client.restMotivation2, client.restMotivation1)"></textarea>
+                            <textarea cols="60" rows="2" ng-model="client.restMotivation2" placeholder="Мотивация к отдыху" ng-change="client.selectMotiv(client.restMotivation2, client.restMotivation1)"></textarea>
                         </p>
                     </div>
-                    <div>{{client.restMotiv}}</div>
+                    <hr ng-if="client.restMotivation1">
+                    <div ng-if="client.restMotivation1">
+                        <p>Хорошо, <span class="client">{{client.firstName}}</span>, я услышала Ваши пожелания.</p>
+                        <div class="row startData">
+                            <div class="col-xs-10 col-xs-offset-1">
+                                <textarea cols="140" rows="4" placeholder="Повторяем пожелания клиента, если нужно редактируем (их)" ng-model="client.wishes">
+                                </textarea>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <p>Я сделаю подборку. Приходите завтра, к <span class="client">{{client.time}}</span> часам, в наш офис - улица Владимира Мономаха (бывшая Московская), 9, офис 2. Это в районе ЦУМа.</p>
+                        <div class="row startData">
+                            <div class="col-xs-3 col-xs-offset-9">
+                                <button class="btn btn-block btn-warning" ng-click="goTable()">Посмотреть таблицу</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -492,5 +558,5 @@
             </div>
         </div>
     </div>
-
+    <div class="panel-footer panel-primary myFooter"></div>
 </div>
